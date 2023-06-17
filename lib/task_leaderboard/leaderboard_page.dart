@@ -8,20 +8,105 @@ class LeaderboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final d = data[0];
-
-    return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          TopLeaders(
-            first: d[0],
-            second: d[1],
-            third: d[2],
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Leaderboard'),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(50),
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 28),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: const BorderRadius.all(Radius.circular(12)),
+              ),
+              child: TabBar(
+                dividerColor: Colors.transparent,
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                labelColor: Colors.black,
+                indicator: UnderlineTabIndicator(
+                  borderRadius: BorderRadius.circular(999),
+                  borderSide: const BorderSide(
+                    color: Colors.blue,
+                    width: 2,
+                  ),
+                ),
+                labelPadding: const EdgeInsets.all(12),
+                splashFactory: NoSplash.splashFactory,
+                splashBorderRadius: const BorderRadius.all(Radius.circular(12)),
+                tabs: const [
+                  Text('Region'),
+                  Text('National'),
+                  Text('Global'),
+                ],
+              ),
+            ),
           ),
-          UserListItem(
-            user: data.first.first,
+        ),
+        body: TabBarView(
+          children: [
+            LeaderboardView(data: leadersData[0]),
+            LeaderboardView(data: leadersData[1]),
+            LeaderboardView(data: leadersData[2]),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class LeaderboardView extends StatelessWidget {
+  const LeaderboardView({
+    super.key,
+    required this.data,
+  });
+
+  final List<User> data;
+
+  List<User> get others => data.sublist(3);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: CustomScrollView(
+        physics: const ClampingScrollPhysics(),
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: 14,
+                bottom: 26,
+              ),
+              child: TopLeaders(
+                first: data[0],
+                second: data[1],
+                third: data[2],
+              ),
+            ),
+          ),
+          SliverFillRemaining(
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(40),
+                  ),
+                  border: Border.all(
+                    color: Colors.grey[200]!,
+                    width: 4
+                  )),
+              child: ListView.separated(
+                physics: const NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
+                itemCount: others.length,
+                itemBuilder: (_, index) => UserListItem(user: others[index]),
+                separatorBuilder: (_, index) => const Divider(height: 28),
+              ),
+            ),
           ),
         ],
       ),

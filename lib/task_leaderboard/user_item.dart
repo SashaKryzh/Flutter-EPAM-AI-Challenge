@@ -31,6 +31,7 @@ class UserListItem extends StatelessWidget {
         const SizedBox(width: 20),
         Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
               user.score.toString(),
@@ -47,7 +48,7 @@ class UserListItem extends StatelessWidget {
 }
 
 class _ScoreChangeIcon extends StatelessWidget {
-  const _ScoreChangeIcon(this.scoreChange, {super.key});
+  const _ScoreChangeIcon(this.scoreChange);
 
   final ScoreChange scoreChange;
 
@@ -78,26 +79,32 @@ class UserAvatar extends StatelessWidget {
   const UserAvatar(
     this.imageUrl, {
     super.key,
+    this.radius = 24,
     this.borderColor,
   });
 
   final String imageUrl;
+  final double radius;
   final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
     var result = CircleAvatar(
-      radius: 24,
+      radius: radius,
+      backgroundColor: Colors.white,
       child: ClipOval(
         child: Image.asset(
           imageUrl,
+          fit: BoxFit.cover,
+          width: radius * 2,
+          height: radius * 2,
         ),
       ),
     );
 
     if (borderColor != null) {
       result = CircleAvatar(
-        radius: 26,
+        radius: radius + 3,
         backgroundColor: borderColor,
         child: result,
       );

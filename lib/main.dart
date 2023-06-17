@@ -15,6 +15,7 @@ class MainApp extends StatelessWidget {
       title: 'Flutter EPAM AI Challenge',
       debugShowCheckedModeBanner: false,
       routerConfig: router,
+      theme: ThemeData.light(useMaterial3: true),
     );
   }
 }
