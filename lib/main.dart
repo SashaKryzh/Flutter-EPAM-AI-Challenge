@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_epam_ai_challenge/router.dart';
+import 'package:flutter_epam_ai_challenge/task_movies/di.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {
+  // Movies task
+  configureDependencies();
+
   runApp(const MainApp());
 }
 
