@@ -16,12 +16,22 @@ class MoviesProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  MovieSorting? _sorting;
+  MovieSorting? get sorting => _sorting;
+
+  MoviePriceFilter? _filter;
+  MoviePriceFilter? get filter => _filter;
+
   Future<void> loadData() async {
     _error = '';
     _isLoading = true;
     notifyListeners();
 
-    final result = await _moviesRepository.getMovies();
+    final result = await _moviesRepository.getMovies(
+      sorting: _sorting,
+      filter: _filter,
+    );
+
     result.fold(
       (error) => _error = error,
       (movies) => _movies = movies,
@@ -29,5 +39,18 @@ class MoviesProvider extends ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  void setSorting(MovieSorting? sorting) {
+    _sorting = sorting;
+    loadData();
+  }
+
+  void setFilter({
+    required int min,
+    required int max,
+  }) {
+    _filter = MoviePriceFilter(min: min, max: max);
+    loadData();
   }
 }

@@ -11,7 +11,10 @@ class MovieListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: const Icon(Icons.movie),
-      title: Text(movie.name),
+      title: Text(
+        movie.name,
+        style: const TextStyle(fontWeight: FontWeight.w500),
+      ),
       subtitle: Text('Price: \$${movie.price.toString()}'),
       trailing: Text('ID: ${movie.id}'),
       onTap: onTap,

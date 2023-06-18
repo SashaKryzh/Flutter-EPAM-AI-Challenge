@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_epam_ai_challenge/task_movies/data/movies_remote.dart';
+import 'package:flutter_epam_ai_challenge/task_movies/domain/models/movie_detail_model.dart';
 import 'package:flutter_epam_ai_challenge/task_movies/domain/models/movie_model.dart';
 
 class MoviesRepository {
@@ -7,13 +8,35 @@ class MoviesRepository {
 
   final MoviesRemoteDataSource _remote;
 
-  Future<Either<String, List<Movie>>> getMovies() async {
+  Future<Either<String, List<Movie>>> getMovies({
+    MovieSorting? sorting,
+    MoviePriceFilter? filter,
+  }) async {
     try {
       final moviesDto = await _remote.getMovies();
-      final movies = moviesDto.map((e) => e.toModel()).toList();
+      var movies = moviesDto.map((e) => e.toModel()).toList();
+
+      if (filter != null) {
+        movies.removeWhere((movie) => !filter.isInRange(movie.price));
+      }
+
+      if (sorting != null) {
+        movies.sort(sorting.compare);
+      }
+
       return Right(movies);
     } catch (e) {
       return Left('Failed to load movies: $e');
+    }
+  }
+
+  Future<Either<String, MovieDetail>> getMovieDetail(String id) async {
+    try {
+      final movieDetailDto = await _remote.getMovieDetail(id);
+      final movieDetail = movieDetailDto.toModel();
+      return Right(movieDetail);
+    } catch (e) {
+      return Left('Failed to get movie detail: $e');
     }
   }
 }
