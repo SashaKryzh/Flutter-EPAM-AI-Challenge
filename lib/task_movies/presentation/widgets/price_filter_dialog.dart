@@ -54,12 +54,12 @@ class _PriceFilterDialogState extends State<PriceFilterDialog> {
         ],
       ),
       actions: [
-        if (_minPrice != widget.min || _maxPrice != widget.max)
+        if (_minPrice != widget.minAvailable || _maxPrice != widget.maxAvailable)
           TextButton(
             onPressed: () {
               setState(() {
-                _minPrice = widget.min;
-                _maxPrice = widget.max;
+                _minPrice = widget.minAvailable;
+                _maxPrice = widget.maxAvailable;
               });
             },
             child: const Text('Clear'),
