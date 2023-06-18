@@ -19,75 +19,12 @@ class MoviesPage extends StatelessWidget {
       builder: (context, _) => Scaffold(
         appBar: AppBar(
           title: const Text('Movies'),
-          actions: [
-            IconButton(
-              onPressed: () {
-                final provider = context.read<MoviesProvider>();
-
-                final minAvailable =
-                    provider.allMovies.reduce((currentMin, movie) {
-                  return movie.price < currentMin.price ? movie : currentMin;
-                });
-
-                final maxAvailable =
-                    provider.allMovies.reduce((currentMax, movie) {
-                  return movie.price > currentMax.price ? movie : currentMax;
-                });
-
-                final minPrice = max(
-                  provider.filter?.min.toDouble() ?? 0,
-                  minAvailable.price.toDouble(),
-                );
-
-                final maxPrice = min(
-                  provider.filter?.max.toDouble() ?? double.infinity,
-                  maxAvailable.price.toDouble(),
-                );
-
-                showDialog(
-                  context: context,
-                  builder: (_) => PriceFilterDialog(
-                    min: minPrice,
-                    minAvailable: minAvailable.price.toDouble(),
-                    max: maxPrice,
-                    maxAvailable: maxAvailable.price.toDouble(),
-                    onFilterApplied: (minPrice, maxPrice) =>
-                        context.read<MoviesProvider>().setFilter(
-                              min: minPrice.toInt(),
-                              max: maxPrice.toInt(),
-                            ),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.filter_list),
-            ),
-            PopupMenuButton<MovieSorting>(
-              icon: const Icon(Icons.sort),
-              onSelected: (MovieSorting selectedOption) {
-                context.read<MoviesProvider>().setSorting(selectedOption);
-              },
-              itemBuilder: (BuildContext context) => [
-                const PopupMenuItem(
-                  value: MovieSorting.nameAsc,
-                  child: Text('Name Ascending'),
-                ),
-                const PopupMenuItem(
-                  value: MovieSorting.nameDesc,
-                  child: Text('Name Descending'),
-                ),
-                const PopupMenuItem(
-                  value: MovieSorting.priceAsc,
-                  child: Text('Price Ascending'),
-                ),
-                const PopupMenuItem(
-                  value: MovieSorting.priceDesc,
-                  child: Text('Price Descending'),
-                ),
-              ],
-            ),
+          actions: const [
+            _FilterButton(),
+            _SortMenuButton(),
           ],
         ),
-        body: Consumer<MoviesProvider>(builder: (context, provider, __) {
+        body: Consumer<MoviesProvider>(builder: (context, provider, _) {
           if (provider.isLoading) {
             return const Center(
               child: CircularProgressIndicator(),
@@ -100,16 +37,113 @@ class MoviesPage extends StatelessWidget {
             );
           }
 
+          final movies = provider.filteredMovies;
+
           return ListView.builder(
-            itemCount: provider.filteredMovies.length,
+            itemCount: movies.length,
             itemBuilder: (_, index) => MovieListTile(
-              movie: provider.filteredMovies[index],
-              onTap: () =>
-                  context.go('/movies/${provider.filteredMovies[index].id}'),
+              movie: movies[index],
+              onTap: () => context.go('/movies/${movies[index].id}'),
             ),
           );
         }),
       ),
+    );
+  }
+}
+
+class _FilterButton extends StatelessWidget {
+  const _FilterButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        final provider = context.read<MoviesProvider>();
+
+        final (minPrice, minAvailable, maxPrice, maxAvailable) = findRange(
+          provider.allMovies,
+          provider.filter,
+        );
+
+        showDialog(
+          context: context,
+          builder: (_) => PriceFilterDialog(
+            min: minPrice,
+            minAvailable: minAvailable,
+            max: maxPrice,
+            maxAvailable: maxAvailable,
+            onFilterApplied: (newMin, newMax) => context
+                .read<MoviesProvider>()
+                .setFilter(min: newMin.toInt(), max: newMax.toInt()),
+          ),
+        );
+      },
+      icon: const Icon(Icons.filter_list),
+    );
+  }
+
+  /// min, minAvailable, max, maxAvailable
+  (double, double, double, double) findRange(
+    List<Movie> allMovies,
+    MoviePriceFilter? filter,
+  ) {
+    final minAvailable = allMovies
+        .reduce((currentMin, movie) {
+          return movie.price < currentMin.price ? movie : currentMin;
+        })
+        .price
+        .toDouble();
+
+    final maxAvailable = allMovies
+        .reduce((currentMax, movie) {
+          return movie.price > currentMax.price ? movie : currentMax;
+        })
+        .price
+        .toDouble();
+
+    final minPrice = max(
+      filter?.min.toDouble() ?? 0,
+      minAvailable,
+    );
+
+    final maxPrice = min(
+      filter?.max.toDouble() ?? double.infinity,
+      maxAvailable,
+    );
+
+    return (minPrice, minAvailable, maxPrice, maxAvailable);
+  }
+}
+
+class _SortMenuButton extends StatelessWidget {
+  const _SortMenuButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<MovieSorting>(
+      icon: const Icon(Icons.sort),
+      onSelected: (MovieSorting selectedOption) {
+        context.read<MoviesProvider>().setSorting(selectedOption);
+      },
+      itemBuilder: (BuildContext context) => [
+        const PopupMenuItem(
+          value: MovieSorting.nameAsc,
+          child: Text('Name Ascending'),
+        ),
+        const PopupMenuItem(
+          value: MovieSorting.nameDesc,
+          child: Text('Name Descending'),
+        ),
+        const PopupMenuItem(
+          value: MovieSorting.priceAsc,
+          child: Text('Price Ascending'),
+        ),
+        const PopupMenuItem(
+          value: MovieSorting.priceDesc,
+          child: Text('Price Descending'),
+        ),
+      ],
     );
   }
 }

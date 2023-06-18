@@ -57,10 +57,7 @@ class MoviesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setFilter({
-    required int min,
-    required int max,
-  }) {
+  void setFilter({required int min, required int max}) {
     _filter = MoviePriceFilter(min: min, max: max);
     notifyListeners();
   }
@@ -86,6 +83,7 @@ enum MovieSorting {
   }
 }
 
+@immutable
 class MoviePriceFilter {
   final int min;
   final int max;

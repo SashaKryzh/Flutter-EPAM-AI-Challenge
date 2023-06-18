@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_epam_ai_challenge/task_movies/data/movie_detail_dto.dart';
+import 'package:flutter_epam_ai_challenge/task_movies/data/dto/movie_detail_dto.dart';
 
 class MovieDetail extends Equatable {
   final String image;

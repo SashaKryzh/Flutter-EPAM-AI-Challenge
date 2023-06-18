@@ -1,10 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter_epam_ai_challenge/task_movies/data/dto/movie_detail_dto.dart';
+import 'package:flutter_epam_ai_challenge/task_movies/data/dto/movie_dto.dart';
 import 'package:http/http.dart' as http;
-
-import 'package:flutter_epam_ai_challenge/task_movies/data/movie_dto.dart';
-
-import 'movie_detail_dto.dart';
 
 class MoviesRemoteDataSource {
   MoviesRemoteDataSource(this._client);

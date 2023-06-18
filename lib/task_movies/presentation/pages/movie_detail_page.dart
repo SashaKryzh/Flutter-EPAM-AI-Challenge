@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_epam_ai_challenge/task_movies/di.dart';
 import 'package:flutter_epam_ai_challenge/task_movies/domain/models/movie_detail_model.dart';
 import 'package:flutter_epam_ai_challenge/task_movies/domain/repositories/movies_repository.dart';
+import 'package:flutter_epam_ai_challenge/task_movies/utils/extensions.dart';
 
 class MovieDetailPage extends StatefulWidget {
   const MovieDetailPage({super.key, required this.movieId});
@@ -14,7 +15,7 @@ class MovieDetailPage extends StatefulWidget {
 }
 
 class _MovieDetailPageState extends State<MovieDetailPage> {
-  late var future = getIt<MoviesRepository>().getMovieDetail(widget.movieId);
+  late final future = getIt<MoviesRepository>().getMovieDetail(widget.movieId);
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +30,10 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             );
           }
 
-          if (snapshot.hasError) {
+          final error = snapshot.error ?? snapshot.data?.leftOrNull();
+          if (error != null) {
             return Center(
-              child: Text(snapshot.error.toString()),
+              child: Text(error.toString()),
             );
           }
 
@@ -41,11 +43,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             );
           }
 
-          return snapshot.data!.fold(
-            (l) => Center(
-              child: Text(l),
-            ),
-            (r) => _MovieDetailContent(movieDetail: r),
+          return _MovieDetailContent(
+            movieDetail: snapshot.data!.rightOrNull()!,
           );
         },
       ),
