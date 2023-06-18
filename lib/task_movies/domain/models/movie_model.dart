@@ -25,37 +25,3 @@ extension MovieMappers on MovieDto {
     );
   }
 }
-
-enum MovieSorting {
-  nameAsc,
-  nameDesc,
-  priceAsc,
-  priceDesc;
-
-  int compare(Movie a, Movie b) {
-    switch (this) {
-      case MovieSorting.nameAsc:
-        return a.name.compareTo(b.name);
-      case MovieSorting.nameDesc:
-        return b.name.compareTo(a.name);
-      case MovieSorting.priceAsc:
-        return a.price.compareTo(b.price);
-      case MovieSorting.priceDesc:
-        return b.price.compareTo(a.price);
-    }
-  }
-}
-
-class MoviePriceFilter {
-  final int min;
-  final int max;
-
-  const MoviePriceFilter({
-    required this.min,
-    required this.max,
-  });
-
-  bool isInRange(int price) {
-    return price >= min && price <= max;
-  }
-}

@@ -25,12 +25,12 @@ class MoviesPage extends StatelessWidget {
                 final provider = context.read<MoviesProvider>();
 
                 final minAvailable =
-                    provider.movies.reduce((currentMin, movie) {
+                    provider.allMovies.reduce((currentMin, movie) {
                   return movie.price < currentMin.price ? movie : currentMin;
                 });
 
                 final maxAvailable =
-                    provider.movies.reduce((currentMax, movie) {
+                    provider.allMovies.reduce((currentMax, movie) {
                   return movie.price > currentMax.price ? movie : currentMax;
                 });
 
@@ -101,10 +101,11 @@ class MoviesPage extends StatelessWidget {
           }
 
           return ListView.builder(
-            itemCount: provider.movies.length,
+            itemCount: provider.filteredMovies.length,
             itemBuilder: (_, index) => MovieListTile(
-              movie: provider.movies[index],
-              onTap: () => context.go('/movies/${provider.movies[index].id}'),
+              movie: provider.filteredMovies[index],
+              onTap: () =>
+                  context.go('/movies/${provider.filteredMovies[index].id}'),
             ),
           );
         }),

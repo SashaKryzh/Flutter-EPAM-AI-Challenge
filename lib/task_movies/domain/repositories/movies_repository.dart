@@ -8,22 +8,10 @@ class MoviesRepository {
 
   final MoviesRemoteDataSource _remote;
 
-  Future<Either<String, List<Movie>>> getMovies({
-    MovieSorting? sorting,
-    MoviePriceFilter? filter,
-  }) async {
+  Future<Either<String, List<Movie>>> getMovies() async {
     try {
       final moviesDto = await _remote.getMovies();
       var movies = moviesDto.map((e) => e.toModel()).toList();
-
-      if (filter != null) {
-        movies.removeWhere((movie) => !filter.isInRange(movie.price));
-      }
-
-      if (sorting != null) {
-        movies.sort(sorting.compare);
-      }
-
       return Right(movies);
     } catch (e) {
       return Left('Failed to load movies: $e');
